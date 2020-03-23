@@ -2,13 +2,15 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Comprobante
  *
  * @ORM\Table(name="comprobante", indexes={@ORM\Index(name="fk_comprobante_tipocomprobante1_idx", columns={"tipocomprobante_id"}), @ORM\Index(name="fk_comprobante_persona1_idx", columns={"persona_id"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\ComprobanteRepository")
  */
 class Comprobante
 {
@@ -138,6 +140,16 @@ class Comprobante
      * })
      */
     private $tipocomprobante;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Items", mappedBy="comprobante", orphanRemoval=true)
+     */
+    private $items;
+
+    public function __construct()
+    {
+        $this->items = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -339,4 +351,35 @@ class Comprobante
    public function __toString() {
         return (string) $this->tipo.$this->numero;
     }
+
+   /**
+    * @return Collection|Items[]
+    */
+   public function getItems(): Collection
+   {
+       return $this->items;
+   }
+
+   public function addItem(Items $item): self
+   {
+       if (!$this->items->contains($item)) {
+           $this->items[] = $item;
+           $item->setComprob($this);
+       }
+
+       return $this;
+   }
+
+   public function removeItem(Items $item): self
+   {
+       if ($this->items->contains($item)) {
+           $this->items->removeElement($item);
+           // set the owning side to null (unless already changed)
+           if ($item->getComprob() === $this) {
+               $item->setComprob(null);
+           }
+       }
+
+       return $this;
+   }
 }

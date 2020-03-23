@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -58,6 +60,18 @@ class Caracteristicas {
      * })
      */
     private $tipodetrabajo;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\OrdenCaracteristica", mappedBy="caracteristica", orphanRemoval=true)
+     */
+    private $ordenes;
+
+    public function __construct()
+    {
+        $this->ordenes = new ArrayCollection();
+    }
+
+   
 
     public function getId(): ?int {
         return $this->id;
@@ -117,4 +131,36 @@ class Caracteristicas {
         return (string) $this->nombre;
     }
 
+    /**
+     * @return Collection|OrdenCaracteristica[]
+     */
+    public function getOrdenes(): Collection
+    {
+        return $this->ordenes;
+    }
+
+    public function addOrdene(OrdenCaracteristica $ordene): self
+    {
+        if (!$this->ordenes->contains($ordene)) {
+            $this->ordenes[] = $ordene;
+            $ordene->setCaracteristica($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrdene(OrdenCaracteristica $ordene): self
+    {
+        if ($this->ordenes->contains($ordene)) {
+            $this->ordenes->removeElement($ordene);
+            // set the owning side to null (unless already changed)
+            if ($ordene->getCaracteristica() === $this) {
+                $ordene->setCaracteristica(null);
+            }
+        }
+
+        return $this;
+    }
+
+   
 }

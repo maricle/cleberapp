@@ -29,4 +29,9 @@ class User extends BaseUser {
         // your own logic
     }
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
 }

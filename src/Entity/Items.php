@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Items
  *
  * @ORM\Table(name="items", indexes={@ORM\Index(name="fk_items_producto1_idx", columns={"producto_id"}), @ORM\Index(name="fk_items_orden1_idx", columns={"orden_id"}), @ORM\Index(name="fk_items_comprobante1_idx", columns={"comprobante_id"}), @ORM\Index(name="fk_items_alicuota1_idx", columns={"alicuota_id"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\ItemsRepository")
  */
 class Items
 {
@@ -52,16 +52,7 @@ class Items
      */
     private $alicuota;
 
-    /**
-     * @var \Comprobante
-     *
-     * @ORM\ManyToOne(targetEntity="Comprobante")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="comprobante_id", referencedColumnName="id")
-     * })
-     */
-    private $comprobante;
-
+  
     /**
      * @var \Orden
      *
@@ -81,6 +72,13 @@ class Items
      * })
      */
     private $producto;
+
+    /**
+     * @var \Comprobante 
+     * @ORM\ManyToOne(targetEntity="App\Entity\Comprobante", inversedBy="items")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $comprobante;
 
     public function getId(): ?int
     {
@@ -135,18 +133,6 @@ class Items
         return $this;
     }
 
-    public function getComprobante(): ?Comprobante
-    {
-        return $this->comprobante;
-    }
-
-    public function setComprobante(?Comprobante $comprobante): self
-    {
-        $this->comprobante = $comprobante;
-
-        return $this;
-    }
-
     public function getOrden(): ?Orden
     {
         return $this->orden;
@@ -167,6 +153,18 @@ class Items
     public function setProducto(?Producto $producto): self
     {
         $this->producto = $producto;
+
+        return $this;
+    }
+
+    public function getComprobante(): ?Comprobante
+    {
+        return $this->comprob;
+    }
+
+    public function setComprobante(?Comprobante $comprob): self
+    {
+        $this->comprob = $comprob;
 
         return $this;
     }

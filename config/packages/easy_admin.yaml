@@ -1,17 +1,76 @@
 # config/routes/easy_admin.yaml
 easy_admin:
-    site_name: 'CleberApp'
+    site_name: '<strong>Cleber</strong>App'
     design:
-        brand_color: '#1ABC9C'
+        menu:
+            - {label: Dashboard, route: admin_dashboard, icon: 'dashboard', default: true} 
+           
+            - 
+                label: Ordenes de Trabajo
+                icon: 'cog'
+                children:
+                    - { entity: Ordenes, label: 'Nueva Orden', icon: 'plus', params: { action: new }}
+                    - { entity: Ordenes, label: 'en Proceso', icon: 'refresh'}
+                    - { entity: OrdenesTerminadas, label: 'Terminadas', icon: 'circle-o'}
+            
+            -   label: Ventas
+                icon: 'money'
+                children:
+                    - {entity: Ventas, icon: 'shopping-cart'}
+                     
+            - {entity: Compras, icon: 'table' , permission: [ 'ROLE_ADMIN']}
+            - 
+                label: Archivo 
+                children:
+                    - {entity: Clientes, icon: 'briefcase'}
+                    - {entity: Productos, icon: 'table', permission: [ 'ROLE_ADMIN']}
+                    - {entity: Tipodetrabajo, icon: 'genderless', permission: [ 'ROLE_ADMIN']}
+                    - {entity: Tipocomprobante, icon: 'genderless', permission: [ 'ROLE_ADMIN']}
+                    - {entity: Estadotrabajo, icon: 'map-pin',  permission: [ 'ROLE_ADMIN']}
+                    - {entity: Alicuota, icon: 'anchor', permission: [ 'ROLE_ADMIN']}
+            - {entity: User, icon: 'user'}
+      
+        brand_color: '#d63d89'
+ 
+        assets:
+            css:
+                # ...
+                - 'css/admin.css'
+
     show:
         title: '%%entity_label%% (%%entity_id%%)'
+        actions:
+            - { name: edit, icon: pencil, label: ''} 
+            - { name: list, icon: 'arrow-left', label: 'Listado'}
+    edit:
+        actions:
+            - { name: list, icon: 'arrow-left', label: 'Listado'}
+            - { name: delete,   label: 'Borrar'}
+           
+            
     list:
         title: '%%entity_label%%'
         actions:
-        - { name: edit, icon: pencil, label: ''}
-        - { name: show, icon: info-circle, label: ''}
-    entities:
+            - '- delete'
+            - { name: edit, icon: pencil, label: ''}
+            - { name: show, icon: eye, label: ''}
+        batch_actions:
+            [{ name: 'delete', ask_confirm: true }]
+    formats: 
+        date: 'd/m/Y'
         
+        
+    entities:
+        Ventas:
+            class: App\Entity\Comprobante
+            fields:
+                - {property: total, type: money, type_options: { currency: 'ARS' } }
+                
+        Compras:
+            class: App\Entity\Comprobante
+            list:
+                dql_filer: 'entity.compra = true'
+            
         Clientes:
             class: App\Entity\Persona
             search: [nombre, apellido, documento, email]
@@ -22,18 +81,152 @@ easy_admin:
                     - nombre
                     - documento
                     - {property: gremio,  label: es gremio?}
+                    
         Productos:
             class: App\Entity\Producto
             list:
                  title: '<strong>Lista</strong> de productos nuevos'
+                 
+     
+            
         Ordenes:
             class: App\Entity\Orden
+            controller: App\Controller\OrdenController
+            fields:
+                - { property: id, label: 'Numeracion', type: number, type_options: { disabled: true}, css_class: 'col-sm-3'} 
+                - { property: estadotrabajo, template: 'easyadmin/orden_estado_trabajo.html.twig'}
+                - { property: color, type: color,  css_class: 'col-sm-2'} 
             list:
+                filters: [ id,fecha, estadotrabajo, persona]
+                fields: 
+                    - 'id'
+                    - 'fecha'
+                    - 'persona'
+                    - 'nombre'
+                    - 'original'
+                    - 'impreso'
+                    - 'terminado'
+                    - 'etregado'
+                    - 'prioridad'
+                    - { property: estadotrabajo, label: Estado, template: 'easyadmin/orden_estado_trabajo.html.twig'}
+                sort:  fecha 
+                dql_filter: 'entity.estadotrabajo < 8'
+                collapse_actions: false
                 actions:
-                    - {name: edit, icon: pencil, label: ''}
-                    - {name: show, icon: info-circle, lable: ''}
+                    - '-delete'                    
+                    - { name: orden_cambiarestado_ant,label: '', icon: 'chevron-left', type: route}
+                    - { name: orden_cambiarestado ,label: '', icon: 'chevron-right', type: route}  
+                batch_actions:
+                    - { name: facturarorden, label: 'Facturar', icon: 'usd' }
+            search: 
+                sort_field: [ id, person.name, nombre]                
+                dql_filter: 'entity.estadotrabajo > 0' 
+            form:
+                fields:                    
+                    - { type: group, css_class: 'col-sm-6', label: 'Informacion Básica'}
+                    - id
+                    - { property: fecha, type_options: { widget: 'single_text' }, css_class: 'col-sm-3'  } 
+                    - { property: persona, icon: 'user', type: easyadmin_autocomplete, label: Cliente, help: Apelllido luego Nombre }
+                    - { property: nombre, help: 'Nombre que identificará el trabajo'}
+                    - { property: estadotrabajo, css_class: 'col-sm-3'}
+                    - { property: sucursal, css_class: 'col-sm-3'}
+                    - { property: prioridad, type: integer, help: '1 la mas alta, 3 la mas baja ', css_class: 'col-sm-3'} 
+                   
+                    - { type: group, css_class: 'col-sm-6', label: 'Informacion detallada del trabajo'}
+                    - { property: cantidad, type: integer, css_class: 'col-sm-4'}
+                    - { property: descripcion, type: textarea,  help: 'Opcional'}
+                    - { property: medida_trabajo, type: text }
+                    - papel
+                    - { property: color, type: color,  css_class: 'col-sm-2'} 
+#                    - { property: caracteristicas, type: 'collection', type_options:{ entry_options: {label: true}}} 
+                    - { type: group, css_class: 'col-sm-6', label: 'Informacion $'}
+                    - {property: precio, type: money}
+                    - {property: entrega, type: money}
+            new:
+                fields:
+                    - '-id'
+            edit:
+            show:  
+                actions:
+                    - { name: orden_cambiarestado , css_class: btn, icon: 'plus_square', type: route} 
+                    
+        OrdenesTerminadas:
+            class: App\Entity\Orden
+            controller: App\Controller\OrdenController
+            fields:
+                - { property: id, label: 'Numeracion', type: number, type_options: { disabled: true}, css_class: 'col-sm-3'} 
+                - { property: estadotrabajo, css_class: 'col-sm-3'}
+                - { property: color, type: color,  css_class: 'col-sm-2'} 
+            list:
+                filters: [id, fecha, estadotrabajo, persona]
+                fields: [ 'id', 'fecha', 'persona', 'nombre', 'prioridad',  { property: estadotrabajo, template: 'easyadmin/orden_estado_trabajo.html.twig'}] 
+                sort:  fecha 
+                dql_filter: 'entity.estadotrabajo >= 6'
+                actions: 
+                    - '-delete'
+            search: 
+                sort_field: [ id, person.name, nombre]                
+                dql_filter: 'entity.estadotrabajo > 0'
+              
+            form:
+                fields:                    
+                    - { type: group, css_class: 'col-sm-6', label: 'Informacion Básica'}
+                    - id
+                    - { property: fecha, type_options: { widget: 'single_text' }, css_class: 'col-sm-3'  } 
+                    - { property: persona, icon: 'user', type: easyadmin_autocomplete, label: Cliente, help: Apelllido luego Nombre }
+                    - { property: nombre, help: 'Nombre que identificará el trabajo'}
+                    - { property: estadotrabajo, css_class: 'col-sm-3'}
+                    - { property: prioridad, type: integer, help: '1 la mas alta, 3 la mas baja ', css_class: 'col-sm-3'}  
+                    - { type: group, css_class: 'col-sm-6', label: 'Informacion detallada del trabajo'}
+                    - { property: cantidad, type: integer, css_class: 'col-sm-4'}
+                    - { property: descripcion, type: textarea,  help: 'Opcional'}
+                    - { property: medida_trabajo, type: text }
+                    - papel
+                    - { property: color, type: color,  css_class: 'col-sm-2'} 
+                    - { property: caracteristicas, type: 'collection', type_options:{ entry_options: {label: true}}} 
+                    - {property: precio, type: money}
+            new:
+                fields:
+                    - '-id'
+            edit:
+            show:  
+                fields: 
+                    - id
+                    - { property: fecha, type_options: { widget: 'single_text' }  } 
+                    - { property: persona, icon: 'user',   label: Cliente  }
+                    - { property: nombre }
+                    - { property: estadotrabajo}
+                    - { property: prioridad, type: integer, help: '1 la mas alta, 3 la mas baja '} 
+                    - { property: cantidad, type: integer}
+                    - { property: descripcion, type: textarea,  help: 'Opcional'}
+                    - { property: medida_trabajo, type: text }
+                    - papel
+                    - { property: color, type: color} 
+                    - { property: caracteristicas, type: 'collection' } 
+                    - {property: precio, type: money}
+                 
+                actions:
+                    - { name: orden_cambiarestado , css_class: btn, icon: 'plus_square', type: route}
+                    
         Tipodetrabajo:
             class: App\Entity\Tipodetrabajo
+            
+        Estadotrabajo:
+            label: Estados de Trabajo
+            class: App\Entity\Estadotrabajo
+            
+        Alicuota:
+            label: Alicuotas
+            class: App\Entity\alicuota
+            
+        Tipodocumento:
+            label: Tipos de Documento
+            class: App\Entity\tipoDocumento
+            
+        Tipocomprobante:
+            label: Tipos de Comprobantes
+            class: App\Entity\tipocomprobante
+            
         User:
             class: App\Entity\User
             form:

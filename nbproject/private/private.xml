@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/Users/maricle/Documents/Proyectos/sf4Projects/cleberapp/public/css/admin.css</file>
+            <file>file:/Users/maricle/Documents/Proyectos/sf4Projects/cleberapp/src/Entity/Estadotrabajo.php</file>
+            <file>file:/Users/maricle/Documents/Proyectos/sf4Projects/cleberapp/templates/easyadmin/orden_estado_trabajo.html.twig</file>
+            <file>file:/Users/maricle/Documents/Proyectos/sf4Projects/cleberapp/src/Repository/OrdenRepository.php</file>
+            <file>file:/Users/maricle/Documents/Proyectos/sf4Projects/cleberapp/config/packages/easy_admin.yaml</file>
+            <file>file:/Users/maricle/Documents/Proyectos/sf4Projects/cleberapp/templates/easyadmin/dashboard.html.twig</file>
+            <file>file:/Users/maricle/Documents/Proyectos/sf4Projects/cleberapp/src/Repository/EstadotrabajoRepository.php</file>
+            <file>file:/Users/maricle/Documents/Proyectos/sf4Projects/cleberapp/src/Controller/AdminController.php</file>
+        </group>
+    </open-files>
+</project-private>

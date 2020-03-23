@@ -1,0 +1,13 @@
+:root {
+    /* make the backend contents as wide as the browser window */
+    --body-max-width: 100%;}
+/*estados de trabajo*/
+.estado-trabajo { padding: 5px 10px; border-radius: 5px; color: white; font-size: small; display: block; text-align: center}
+.pendiente {   background-color: #00c0ef;  }
+.diseño {  background-color: #605ca8;  ;}
+.taller {  background-color: #f56954;  }
+.impresion {   background-color: #f39c12;  }
+.terminado {   background-color: #ff851b; }
+.oficina {  background-color: #00a65a; }
+.entregado {   background-color: #39CCCC;  }
+.entregadonp {   background-color: #00c0ef;  }

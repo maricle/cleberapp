@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Estadotrabajo
  *
  * @ORM\Table(name="estadotrabajo")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\EstadotrabajoRepository")
  */
 class Estadotrabajo
 {
@@ -48,4 +48,6 @@ class Estadotrabajo
     public function __toString() {
         return (string) $this->descripcion;
     }
+    
+   
 }

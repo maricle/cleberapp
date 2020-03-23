@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Persona
  *
  * @ORM\Table(name="persona", uniqueConstraints={@ORM\UniqueConstraint(name="UNIQ_51E5B69BB6B12EC7", columns={"documento"})}, indexes={@ORM\Index(name="fk_Persona_condicion_iva_idx", columns={"condicion_iva_id"}), @ORM\Index(name="fk_Persona_tipo_documento1_idx", columns={"tipo_documento_id"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\PersonaRepository")
  */
 class Persona
 {
